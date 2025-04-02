@@ -1,0 +1,79 @@
+.trigger {
+    font-size: 18px;
+    line-height: 64px;
+    padding: 0 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .trigger:hover {
+    color: #1890ff;
+  }
+  
+  .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0);
+    margin: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  }
+  
+  .logo img {
+    max-width: 70%;
+    object-fit: contain;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+  
+  .trigger {
+    cursor: pointer;
+  }
+  
+  
+  nz-header {
+    background: #fff;
+    padding: 0;
+  }
+  
+  nz-content {
+    margin: 0 16px;
+  }
+  
+  .inner-content {
+    padding: 24px;
+    background: #fff;
+    min-height: 360px;
+  }
+  
+  nz-footer {
+    text-align: center;
+  }
+  
+  ::ng-deep .ant-layout-sider {
+    background: #35739c !important;
+  }
+  
+  ::ng-deep .ant-menu-sub.ant-menu-inline{
+    background-color: #35739c !important;
+    color: #cfcfcf;
+  }
+  
+  ::ng-deep .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected{
+    background-color: #35739c !important;
+    color: #cfcfcf;
+  }
+
+  ::ng-deep .ant-menu-submenu-arrow{
+    color: #cfcfcf;
+  }
+  
+  ::ng-deep .ant-drawer-body {
+    padding: 0;
+  }
+  

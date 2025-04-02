@@ -1,0 +1,232 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-10">
+      <span class="h4 text-primary">Agenda | {{ formatarData(dataAtual) }}</span
+      ><br />
+      <small class="text-secondary">Agendamentos: {{ qtdeAgendamentos }}</small>
+    </div>
+    <div class="col-12 p-1">
+      <hr class="text-bs-primary" />
+    </div>
+    <div class="col-12">
+      <div class="list-group" style="overflow: auto; max-height: 70vh">
+        <a
+          href="#"
+          class="list-group-item list-group-item-action active"
+          aria-current="true"
+        >
+          <div class="row">
+            <div class="col-2 text-center">
+              <b>Horário</b>
+            </div>
+            <div class="col-4 text-center">
+              <b>Nome</b>
+            </div>
+            <div class="col-4 text-center">
+              <b>Médico</b>
+            </div>
+            <div class="col-2 text-center">
+              <b>Status</b>
+            </div>
+          </div>
+        </a>
+        <a
+          (click)="showHorario(item)"
+          class="list-group-item list-group-item-action"
+          *ngFor="let item of listAgenda"
+          [ngClass]="{
+            'bg-danger-subtle text-danger': item.status === 'FECHADO'
+          }"
+        >
+          <div class="row">
+            <div class="col-2 border-end border-black text-center">
+              {{ item.horario }}
+            </div>
+            <div class="col-4 border-end border-black text-center">
+              {{ item.nome }}
+            </div>
+            <div class="col-4 border-end border-black text-center">
+              {{ item.medico }}
+            </div>
+            <div class="col-2 text-center text-uppercase">
+              <i
+                class="fa-solid"
+                [ngClass]="{
+                  'fa-square-xmark text-danger': item.status === 'cancelado',
+                  'fa-clock text-success': item.status === 'confirmado',
+                  'fa-info-circle text-warning': item.status === 'pendente',
+                  'fa-square-check text-primary': item.status === 'concluido'
+                }"
+                *ngIf="item.status"
+              >
+              </i
+              >&nbsp;{{ item.status }}
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<nz-modal [(nzVisible)]="isVisible" 
+    [nzTitle]="title"
+    [nzFooter]="footerModal"
+    nzWidth="60vw"
+    (nzOnCancel)="handleCancel()" 
+    (nzOnOk)="handleOk()"
+    
+>
+    <ng-container *nzModalContent>
+        <div *ngIf="pacienteSelecionado" class="mb-2">
+          <div class="row" style="height: 65vh;">
+            <div class="col-12 h-100">
+              <div class="row border rounded align-items-top h-25">
+                <div class="col-4">
+                    <span class="text-primary"><b class="text-dark">Nome: </b>{{pacienteSelecionado}}</span>
+                </div>
+                <div class="col-4">
+                    <span class="text-primary"><b class="text-dark">Médico: </b>{{medicoSelecionado}}</span>
+                </div>
+                <div class="col-4 text-uppercase">
+                    <i
+                    class="fa-solid"
+                    [ngClass]="{
+                      'fa-square-xmark text-danger': statusSelecionado === 'cancelado',
+                      'fa-clock text-success': statusSelecionado === 'confirmado',
+                      'fa-info-circle text-warning': statusSelecionado === 'pendente',
+                      'fa-square-check text-primary': statusSelecionado === 'concluido'
+                    }"
+                    *ngIf="statusSelecionado"
+                  >
+                  </i
+                  >&nbsp;{{ statusSelecionado }}
+                </div>
+              </div>
+              <div class="row border rounded align-items-top mt-3 h-25">
+                  <div class="col-12" style="height: 80px;">
+                      <span class="text-primary"><b class="text-dark">Sintomas: </b>{{sintomaSelecionado}}</span>
+                  </div>
+              </div>
+              <div class="row border rounded align-items-top mt-3 h-50">
+                  <div class="col-12">
+                      <span class="text-primary"><b class="text-dark">Histórico de Consultas: </b></span>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          <form *ngIf="!pacienteSelecionado"
+            nz-form [formGroup]="formAgendamento" nzLayout="vertical">
+            <div class="row" style="height: 65vh;">
+              <div class="col-12">
+                <div class="row border rounded h-25">
+                  <div class="col-9">
+                      <!-- Nome -->
+                      <nz-form-item>
+                          <nz-form-label>
+                              <b><label for="paciente_id">Paciente</label></b>
+                          </nz-form-label>
+                          <nz-form-control  nzErrorTip="O Paciente é obrigatório!">
+                            <nz-select
+                                class="w-100"
+                                id="paciente_id"
+                                formControlName="paciente_id"
+                                nzPlaceHolder="Selecione um paciente"
+                                nzAllowClear
+                                [nzShowSearch]="true"
+                                (ngModelChange)="findPaciente($event)"
+                            >
+                              <nz-option
+                                  *ngFor="let paciente of listPacientes"
+                                  [nzValue]="paciente.paciente_id"
+                                  [nzLabel]="paciente.nome_paciente"
+                              ></nz-option>
+                            </nz-select>
+                          </nz-form-control>
+                      </nz-form-item>
+                  </div>
+                  <div class="col-3 ">
+                      <div class="row">
+                          <div class="col-12">
+                              <span>Horário</span>
+                          </div>
+                          <div class="col-12">
+                              <span class="text-primary h2">{{horarioSelecionado}}</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-6" style="height: 80px;" *ngIf="pacienteIdSelecionado">
+                    <b>Endereço</b><br>
+                    <span class="text-primary">{{enderecoSelecionado}}</span>
+                  </div>
+                  <div class="col-3" style="height: 80px;" *ngIf="pacienteIdSelecionado">
+                      <b>Cidade</b><br>
+                      <span class="text-primary">{{cidadeSelecionado}}</span>
+                  </div>
+                  <div class="col-3" style="height: 80px;" *ngIf="pacienteIdSelecionado">
+                      <b>Telefone</b><br>
+                      <span class="text-primary">{{telefoneSelecionado}}</span>
+                  </div>
+                </div>
+                <div class="row border rounded mt-3 pb-2 h-25">
+                    <div class="col-12"  style="height: 130px;">
+                      <nz-form-item>
+                        <nz-form-label>
+                            <b><label for="paciente_id">Sintomas</label></b>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="Informas os sintomas é obrigatório!">
+                          <textarea rows="4" nz-input formControlName="queixa"></textarea>
+                        </nz-form-control>
+                      </nz-form-item>
+                    </div>
+                </div>
+                <div class="row border rounded mt-3 mb-2 h-50">
+                  <div class="col-12">
+                    <span class="text-primary"><b class="text-dark">Histórico de Consultas: </b></span>
+                </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+    </ng-container>
+    <ng-template #footerModal>
+        <div class="row justify-content-end" *ngIf="pacienteSelecionado">
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-success">
+                    <i class="fa-solid fa-square-check"></i>
+                    &nbsp;&nbsp;Confirmar horário
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    &nbsp;&nbsp;Marcar Retorno
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class="fa-solid fa-list-numeric"></i>
+                    &nbsp;&nbsp;Emitir Receituário
+                </button>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    &nbsp;&nbsp;Finalizar Consulta
+                </button>
+            </div>
+        </div>
+        <div class="row justify-content-end" *ngIf="!pacienteSelecionado">
+            <div class="col-auto">
+                <button class="btn btn-sm btn-primary" (click)="saveAgendamento()">
+                    <i class="fa-solid fa-floppy-disk"></i>&nbsp; Salvar Agendamento
+                </button>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #title>
+        <span class="text-primary">Agendar Consulta</span>
+    </ng-template>
+  </nz-modal>

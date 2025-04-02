@@ -1,0 +1,28 @@
+<div class="card shadow">
+  <div class="card-body">
+    <nz-calendar nzFullscreen="true">
+      <ng-container *nzDateCell="let date">
+        <div class="day-cell h-100 border rounded" (click)="navigateToDate(date)">
+          <ul class="events pe-2 ps-2">
+            <ng-container *ngFor="let agenda of getAgendaForDate(date)">
+              <li *ngFor="let service of agenda.services">
+                <nz-badge
+                  [nzStatus]="getStatus(service.status)"
+                  [nzText]="(service.name | slice:0:7)  + '... - ' + service.hour"
+                ></nz-badge>
+              </li>
+            </ng-container>
+          </ul>
+        </div>
+      </ng-container>
+    
+      <ng-container *nzMonthCell="let month">
+        <div *ngIf="getMonthData(month) as monthData" class="notes-month">
+          <section>{{ monthData }} Atendimentos</section>
+        </div>
+      </ng-container>
+    </nz-calendar>
+    
+    
+  </div>
+</div>

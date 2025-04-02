@@ -1,0 +1,187 @@
+<div class="container-fluid d-flex justify-content-around bg-light" style="height: 100vh; padding-left: 20vw; padding-right: 20vw;">
+  <div class="row w-100 align-items-center">
+    <div class="col-4 rounded border p-5 d-flex justify-content-center align-items-center bg-bs-primary h-75 shadow">
+      <div class="row">
+        <div class="col-12">
+          <img src="assets/img/logo/logo-clinics.png" alt="" style="width:100%; height: 100%;">
+        </div>
+        <div class="col-12 text-center">
+          <span class="h3">GERENCIAMENTO CLÍNICO</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-8 pt-5 rounded border bg-secondary-subtle shadow h-75">
+      <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+        <div class="row">
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label
+                class="text-start"
+                [nzSm]="24"
+                [nzXs]="24"
+                nzFor="nome"
+                nzRequired
+                nzTooltipTitle="Informe seu nome completo"
+              >
+                <span>Nome</span>
+              </nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Nome é obrigatório!">
+                <input nz-input id="nome" formControlName="nome" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzRequired nzFor="email">E-mail</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+                <input nz-input formControlName="email" id="email" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="senha" nzRequired>Senha</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Senha é obrigatória!">
+                <input
+                  nz-input
+                  type="password"
+                  id="senha"
+                  formControlName="senha"
+                  (ngModelChange)="updateConfirmValidator()"
+                />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="checkPassword" nzRequired>Confirmação de Senha</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" [nzErrorTip]="errorTpl">
+                <input nz-input type="password" formControlName="checkPassword" id="checkPassword" />
+                <ng-template #errorTpl let-control>
+                  <ng-container *ngIf="control.hasError('required')">POr favor, confirme a senha!</ng-container>
+                  <ng-container *ngIf="control.hasError('confirm')">
+                    Confirmação de senha inconsistente!
+                  </ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="crm" nzRequired>CRM</nz-form-label>
+              <nz-form-control
+                [nzSm]="24"
+                [nzXs]="24"
+                [nzValidateStatus]="validateForm.controls['crm']"
+                nzErrorTip="CRM é obrigatório!"
+              >
+              <input formControlName="crm" id="'crm'" nz-input />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="estado" nzRequired>Especialidade</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Especialidade é obrigatória!">
+                <nz-select nzShowSearch nzAllowClear nzInput id="especialidade_id" formControlName="especialidade_id" placeholder="especialidade_id">
+                  <nz-option *ngFor="let item of especialidades" [nzValue]="item.id" [nzLabel]="item.nome"></nz-option>
+                </nz-select>                
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-3">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="telefone" nzRequired>Telefone</nz-form-label>
+              <nz-form-control
+                [nzSm]="24"
+                [nzXs]="24"
+                [nzValidateStatus]="validateForm.controls['telefone']"
+                nzErrorTip="Telefone de contato é obrigatório!"
+              >
+              <input formControlName="telefone" id="'telefone'" nz-input />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-3">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="cep" nzRequired>CEP</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="CEP é obrigatório!">
+                <input nz-input id="cep" formControlName="cep" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="cidade" nzRequired>Cidade</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Cidade é obrigatória!">
+                <nz-select nzShowSearch nzAllowClear nzInput id="cidade_id" formControlName="cidade_id">
+                  <nz-option *ngFor="let item of cidades" [nzValue]="item.id" [nzLabel]="item.nome"></nz-option>
+                </nz-select>                
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-12">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="rua" nzRequired>Rua</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Rua é obrigatório!">
+                <input nz-input id="rua" formControlName="rua" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-6">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="bairro" nzRequired>Bairro</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Bairro é obrigatório!">
+                <input nz-input id="bairro" formControlName="bairro" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-3">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="numero" nzRequired>Nº</nz-form-label>
+              <nz-form-control
+                [nzSm]="24"
+                [nzXs]="24"
+                [nzValidateStatus]="validateForm.controls['numero']"
+                nzErrorTip="Número é obrigatório!"
+              >
+              <input formControlName="numero" id="'numero'" nz-input />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <div class="col-3">
+            <nz-form-item>
+              <nz-form-label class="text-start" [nzSm]="24" [nzXs]="24" nzFor="estado" nzRequired>Estado</nz-form-label>
+              <nz-form-control [nzSm]="24" [nzXs]="24" nzErrorTip="Please input estado!">
+                <nz-select nzInput id="estado" formControlName="estado" placeholder="Estado">
+                  <nz-option *ngFor="let estado of estados" [nzValue]="estado.sigla" [nzLabel]="estado.sigla"></nz-option>
+                </nz-select>                
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-12 text-end">
+            <button class="btn btn-primary">Registrar</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

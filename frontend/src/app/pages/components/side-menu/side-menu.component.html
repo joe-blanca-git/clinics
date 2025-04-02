@@ -1,0 +1,23 @@
+<ul
+  nz-menu
+  [nzMode]="collapsed ? 'vertical' : 'inline'"
+  style="background: #35739c; color: aliceblue;"
+
+>
+  <li nz-menu-item routerLink="/agenda" title="Agenda">
+    <i class="fa fa-calendar-alt" aria-hidden="true"></i>&nbsp;&nbsp; Agenda
+  </li>
+  <li
+    *ngFor="let item of menu"
+    nz-submenu
+    [nzTitle]="item.title"
+    [nzIcon]="item.icon"
+  >
+    <ul>
+      <li *ngFor="let subItem of item.subItems" nz-menu-item [routerLink]="subItem.route">
+        {{ subItem.name }}
+      </li>
+    </ul>
+  </li>
+</ul>
+

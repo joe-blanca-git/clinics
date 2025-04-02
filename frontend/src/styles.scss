@@ -1,0 +1,31 @@
+@import "./themes/variabel.base.scss";
+
+.bg-bs-primary{
+    background: $base-primary !important;
+    color: aliceblue !important;
+}
+
+.text-bs-primary{
+    color: $base-primary !important;
+}
+
+@media (max-width: 768px) {
+    .hidden-sm {
+        display: none !important;
+    }
+
+    .text-sm {
+        font-size: smaller !important;
+        text-align: center !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .hidden-xl {
+        display: none !important;
+    }
+}
+
+:ng-deep .ant-menu .ant-menu-root .ant-menu-light .ant-menu-inline {
+    background: #35739c !important;
+}

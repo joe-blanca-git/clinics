@@ -1,0 +1,202 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-10">
+            <span class="h4 text-primary">Pacientes</span><br>
+            <small class="text-secondary">cadastro/pacientes - </small>
+            <span class="badge bg-bs-primary">{{totalPacientes}} Pacientes</span> 
+        </div>
+        <div class="col-12 p-1">
+            <hr class="text-bs-primary">
+        </div>
+        <div class="col-12">
+            <div class="row">
+                <div class="col-3">
+                    <form action="" [formGroup]="formPesquisa">
+                        <nz-form-item>
+                            <nz-form-control>
+                                <nz-input-group nzSearch [nzAddOnAfter]="suffixIconButton">
+                                    <input type="text" nz-input placeholder="Nome do Paciente" formControlName="BuscaNome" (input)="findPaciente()"/>
+                                  </nz-input-group>
+                                  <ng-template #suffixIconButton>
+                                    <button nz-button nzType="primary" nzSearch (click)="findPaciente()">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </button>
+                                  </ng-template>
+                            </nz-form-control>
+                          </nz-form-item>
+                    </form>
+                </div>
+                <div class="col-9 d-flex justify-content-end align-items-start">
+                    <button class="btn btn-sm btn-outline-primary" (click)="showModal()">
+                        <i class="fa-solid fa-square-plus"></i> Novo
+                     </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <nz-table #basicTable [nzData]="listPacientes" [nzBordered]="true" [nzSize]="'middle'" [nzPageSize]="10" [nzShowPagination]="true">
+                <thead>
+                  <tr>
+                    <th nzWidth="50%">Nome</th>
+                    <th nzWidth="15%">Idade</th>
+                    <th nzWidth="20%">Telefone</th>
+                    <th nzWidth="15%" class="text-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let data of listPacientesAux">
+                    <td>{{ data.nome_paciente }}</td>
+                    <td>{{ data.data_nascimento }}</td>
+                    <td>{{ data.telefone }}</td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary me-1" (click)="editPaciente(data)"><i class="fa-solid fa-pen"></i></button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deletePaciente(data)"><i class="fa-solid fa-trash-alt"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+            </nz-table>  
+        </div>
+    </div>
+</div>
+<nz-modal [(nzVisible)]="isVisible" 
+    nzTitle="Cadastrar Paciente"
+    [nzFooter]="footerModal"
+    nzWidth="60vw" 
+    (nzOnCancel)="handleCancel()" 
+    (nzOnOk)="handleOk()"
+>
+    <ng-container *nzModalContent>
+        <form nz-form [formGroup]="formPaciente" (ngSubmit)="onSubmit()" nzLayout="vertical">
+            <div class="row">
+                <div class="col-6">
+                    <!-- Nome -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="nome">Nome</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Nome é obrigatório!">
+                            <input class="w-100" nz-input id="nome" formControlName="nome" placeholder="Digite o nome" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="col-3">
+                    <!-- Telefone -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="telefone">Telefone</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Telefone é obrigatório!">
+                            <input class="w-100" nz-input id="telefone" formControlName="telefone" placeholder="Digite o telefone" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="col-3">
+                    <!-- Data de Nascimento -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="data_nascimento">Data de Nascimento</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Data de Nascimento é obrigatória!">
+                            <input class="w-100" nz-input id="data_nascimento" type="date" formControlName="data_nascimento" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-3">
+                    <!-- Cidade -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="cidade_id">Cidade</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Cidade é obrigatória!">
+                            <nz-select
+                            class="w-100"
+                            id="cidade_id"
+                            formControlName="cidade_id"
+                            nzPlaceHolder="Selecione uma cidade"
+                            [nzShowSearch]="true"
+                        >
+                        <nz-option
+                            *ngFor="let cidade of listCidades"
+                            [nzValue]="cidade.id"
+                            [nzLabel]="cidade.nome"
+                        ></nz-option>
+                        </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-3">
+                    <!-- Estado -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="estado">Estado</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Cidade é obrigatória!">
+                            <nz-select
+                            class="w-100"
+                            id="estado"
+                            formControlName="estado"
+                            nzPlaceHolder="Selecione um estado"
+                        >
+                        <nz-option
+                            *ngFor="let estado of listEstados"
+                            [nzValue]="estado.sigla"
+                            [nzLabel]="estado.sigla"
+                        ></nz-option>
+                        </nz-select>
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-6">
+                    <!-- Rua -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="rua">Rua</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Data de Nascimento é obrigatória!">
+                            <input class="w-100" nz-input id="rua" formControlName="rua" placeholder="Digite a rua" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-3">
+                    <!-- Número -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="numero">Número</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Número é obrigatório!">
+                            <input class="w-100" nz-input id="numero" formControlName="numero" type="number" placeholder="Digite o número" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-6">
+                    <!-- Bairro -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="bairro">Bairro</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O Bairro é obrigatório!">
+                            <input class="w-100" nz-input id="bairro" formControlName="bairro" placeholder="Digite o bairro" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+                <div class="mt-2 col-3">
+                    <!-- CEP -->
+                    <nz-form-item>
+                        <nz-form-label>
+                            <label for="cep">CEP</label>
+                        </nz-form-label>
+                        <nz-form-control  nzErrorTip="O CEP é obrigatório!">
+                            <input class="w-100" nz-input id="cep" formControlName="cep" placeholder="Digite o CEP" />
+                        </nz-form-control>
+                    </nz-form-item>
+                </div>
+            </div>
+          </form>
+    </ng-container>
+    <ng-template #footerModal>
+        <button class="btn btn-sm btn-primary" (click)="onSubmit()">
+            <i class="fa-solid fa-floppy-disk"></i>
+            &nbsp;&nbsp;Salvar
+        </button>
+    </ng-template>
+  </nz-modal>
