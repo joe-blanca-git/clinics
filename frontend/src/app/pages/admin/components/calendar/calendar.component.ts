@@ -25,7 +25,6 @@ export class CalendarComponent {
     this.calendarService.getAgendamento()
     .then((res:AgendamentoModel[]) => {
       this.listAgenda = res;
-      console.log(this.listAgenda);
       
     }).catch((err) => {
       console.error(err);

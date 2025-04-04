@@ -11,6 +11,7 @@ import { NotificationService } from 'src/app/shared/services/notification.servic
 import { PacienteService } from '../../services/paciente.service';
 import { PacientesModel } from '../../models/paciente.model';
 import { CalendarService } from '../../services/calendar.service';
+import { AgendamentoModel } from '../../models/agendamento.model';
 
 @Component({
   selector: 'app-calendar-day',
@@ -37,9 +38,9 @@ export class CalendarDayComponent implements OnInit {
 
   isVisible = false;
 
-  listAgenda: any = [];
-  listAgendamentos: any = [];
-  listPacientes: PacientesModel[]=[]
+  listAgenda: any[] = [];
+  listAgendamentos: AgendamentoModel[] = [];
+  listPacientes: PacientesModel[] = [];
 
   formAgendamento = this.fb.group({
     paciente_id: this.fb.control('', [Validators.required]),
@@ -64,76 +65,36 @@ export class CalendarDayComponent implements OnInit {
       }
     });
 
+    this.obterPacientes();
     this.listAgenda = this.generateScheduleList();
-    this.listAgendamentos = [
-      {
-        horario: '07:30',
-        nome: 'Ana Silva',
-        medico: 'Dr. Carlos',
-        status: 'confirmado',
-      },
-      {
-        horario: '08:00',
-        nome: 'João Oliveira',
-        medico: 'Dra. Fernanda',
-        status: 'confirmado',
-      },
-      {
-        horario: '08:30',
-        nome: 'Maria Santos',
-        medico: 'Dr. Eduardo',
-        status: 'confirmado',
-      },
-      {
-        horario: '09:00',
-        nome: 'Pedro Costa',
-        medico: 'Dra. Mariana',
-        status: 'cancelado',
-      },
-      {
-        horario: '09:30',
-        nome: 'Lucas Almeida',
-        medico: 'Dr. Henrique',
-        status: 'cancelado',
-      },
-      {
-        horario: '10:00',
-        nome: 'Carla Pereira',
-        medico: 'Dra. Juliana',
-        status: 'pendente',
-      },
-      {
-        horario: '10:30',
-        nome: 'Rafael Nunes',
-        medico: 'Dr. Gustavo',
-        status: 'pendente',
-      },
-      {
-        horario: '11:00',
-        nome: 'Isabela Rocha',
-        medico: 'Dra. Camila',
-        status: 'pendente',
-      },
-      {
-        horario: '11:30',
-        nome: 'Gabriel Monteiro',
-        medico: 'Dr. Ricardo',
-        status: 'concluido',
-      },
-      {
-        horario: '12:00',
-        nome: 'Fernanda Lima',
-        medico: 'Dra. Sofia',
-        status: 'concluido',
-      },
-    ];
-
-    this.obterPacientes();   
-
-    this.mergeSchedules(this.listAgenda, this.listAgendamentos);
+    this.getAgendamentos();
   }
 
-  saveAgendamento(){
+  getAgendamentos() {
+    this.calendarService
+      .getAgendamento()
+      .then((res: AgendamentoModel[]) => {
+        this.listAgendamentos = res;
+
+        // this.listAgenda = this.listAgendamentos.flatMap((agendamento) =>
+        //   agendamento.services.map((service) => ({
+        //     horario: service.hour?.substring(0, 5),
+        //     nome: service.name,
+        //     medico: 'Dr. Fulano',
+        //     status: service.status,
+        //   }))
+        // );
+
+        // console.log(this.listAgenda);
+      })
+      .catch((err) => {
+        console.error(err);
+      }).finally(() => {
+        this.mergeSchedules(this.listAgenda, this.listAgendamentos);
+      });
+  }
+
+  saveAgendamento() {
     if (this.pacienteIdSelecionado && this.formAgendamento.valid) {
       const _paciente_id = this.pacienteIdSelecionado;
       const _data_consulta = this.dataAtual;
@@ -144,22 +105,25 @@ export class CalendarDayComponent implements OnInit {
         paciente_id: _paciente_id,
         data_consulta: _data_consulta,
         hora_consulta: _hora_consulta,
-        queixa: _sintoma
+        queixa: _sintoma,
       };
 
-      this.calendarService.postAgendamento(agendamentoBody)
-      .subscribe({
-        next:(v) => this.sucesso(v),
-        error:(e) => this.erro(e),
-        complete:() => {
+      this.calendarService.postAgendamento(agendamentoBody).subscribe({
+        next: (v) => this.sucesso(v),
+        error: (e) => this.erro(e),
+        complete: () => {
           this.clearData();
-        }
-      })
+        },
+      });
 
       console.log(agendamentoBody);
-      
     } else {
-      this.notification.createBasicNotification('error', 'bg-warning', 'text-danger', 'Preencha todas as informações para fazer o agendamento!');
+      this.notification.createBasicNotification(
+        'error',
+        'bg-warning',
+        'text-danger',
+        'Preencha todas as informações para fazer o agendamento!'
+      );
     }
   }
 
@@ -172,31 +136,34 @@ export class CalendarDayComponent implements OnInit {
     this.isVisible = true;
   }
 
-  obterPacientes(){
-    this.pacienteService.getPacientes()
-    .then((res:any) => {
-      this.listPacientes = res;
-    }).catch((err) => {
-      console.error(err);
-    });
+  obterPacientes() {
+    this.pacienteService
+      .getPacientes()
+      .then((res: any) => {
+        this.listPacientes = res;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 
-  findPaciente(id: any){
+  findPaciente(id: any) {
     if (id) {
-      const dataPaciente = this.listPacientes.filter((i) => i.paciente_id === id);
-      this.enderecoSelecionado = dataPaciente[0].rua + ' - ' + dataPaciente[0].numero;
+      const dataPaciente = this.listPacientes.filter(
+        (i) => i.paciente_id === id
+      );
+      this.enderecoSelecionado =
+        dataPaciente[0].rua + ' - ' + dataPaciente[0].numero;
       this.cidadeSelecionado = dataPaciente[0].cidade;
       this.telefoneSelecionado = dataPaciente[0].telefone;
       this.pacienteIdSelecionado = dataPaciente[0].paciente_id;
     } else {
-
     }
   }
 
   getSintoma() {
     return 'sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste sintoma teste ';
   }
-
 
   showModal(): void {
     this.isVisible = true;
@@ -228,7 +195,7 @@ export class CalendarDayComponent implements OnInit {
     );
   }
 
-  clearData(){
+  clearData() {
     this.enderecoSelecionado = '';
     this.cidadeSelecionado = '';
     this.telefoneSelecionado = '';
@@ -278,19 +245,30 @@ export class CalendarDayComponent implements OnInit {
   }
 
   mergeSchedules(listAgenda: any[], listAgendamentos: any[]) {
+  
+    const agendamentosFiltrados = listAgendamentos.filter((i) => 
+      i.date.trim() === this.formatarData(this.dataAtual).trim()
+    );
+    
     listAgenda.forEach((agenda) => {
-      const matchingAgendamento = listAgendamentos.find(
-        (agendamento) => agendamento.horario === agenda.horario
+      const matchingAgendamento = agendamentosFiltrados.find((agendamento) => 
+        agendamento.services.some((service: any) => service.hour.startsWith(agenda.horario))
       );
-
+  
       if (matchingAgendamento) {
-        agenda.nome = matchingAgendamento.nome;
-        agenda.medico = matchingAgendamento.medico;
-        agenda.status = matchingAgendamento.status;
+        const matchingService = matchingAgendamento.services.find((service: any) => 
+          service.hour.startsWith(agenda.horario)
+        );
+  
+        if (matchingService) {
+          agenda.nome = matchingService.name || '';
+          agenda.medico = 'Dr. Exemplo';
+          agenda.status = matchingService.status || '';
+        }
       }
     });
-
+  
     return listAgenda;
   }
-
+  
 }
